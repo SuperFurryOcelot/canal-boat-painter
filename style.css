@@ -82,3 +82,27 @@ header p {
   outline: 3px solid var(--ink);
   outline-offset: 2px;
 }
+
+/* Action buttons below the colour pickers */
+.actions {
+  margin-top: 1.5rem;
+}
+
+.actions button {
+  font: inherit;
+  padding: 0.5rem 1.1rem;
+  color: var(--ink);
+  background: var(--sky);
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.actions button:hover {
+  border-color: var(--muted);
+}
+
+.actions button:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+}

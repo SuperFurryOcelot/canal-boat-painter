@@ -20,3 +20,12 @@ pickers.forEach(function (picker) {
     paintPart(picker.dataset.part, picker.value);
   });
 });
+
+// Reset button: put every picker back to its starting colour.
+// defaultValue is the value written in the HTML, so the defaults only live in one place.
+document.getElementById('reset').addEventListener('click', function () {
+  pickers.forEach(function (picker) {
+    picker.value = picker.defaultValue;
+    paintPart(picker.dataset.part, picker.value);
+  });
+});

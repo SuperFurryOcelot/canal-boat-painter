@@ -1,11 +1,82 @@
-   <!DOCTYPE html>
-   <html lang="en">
-   <head>
-     <meta charset="UTF-8">
-     <title>Canal Boat Painter</title>
-   </head>
-   <body>
-     <h1>Canal Boat Painter</h1>
-     <p>Coming soon(ish).</p>
-   </body>
-   </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Canal Boat Painter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Canal Boat Painter</h1>
+    <p>Pick a colour for each part of the boat to try out a paint scheme.</p>
+  </header>
+
+  <main>
+    <!-- The boat drawing. Each paintable shape has a data-part attribute,
+         which app.js uses to find it. data-paint says whether the colour
+         applies to the shape's fill (default) or its outline (stroke). -->
+    <figure class="drawing">
+      <svg id="boat" viewBox="0 0 1000 250" role="img" aria-label="Side view of a narrowboat">
+
+        <!-- Hull, with a raised bow on the left -->
+        <path data-part="hull" d="M30 128 Q70 146 110 150 L950 150 L955 205 L130 205 Q60 200 30 128 Z"/>
+        <!-- Rubbing strakes: darker lines that follow whatever the hull colour is -->
+        <path d="M60 170 L952 170 M90 188 L953 188" stroke="rgba(0,0,0,0.35)" stroke-width="3" fill="none"/>
+
+        <!-- Gunwale: the ledge along the top of the hull -->
+        <path data-part="gunwale" d="M30 128 Q70 146 110 150 L950 150 L950 143 L110 143 Q74 140 34 122 Z"/>
+
+        <!-- Roof and handrail -->
+        <rect data-part="roof" x="192" y="52" width="696" height="12" rx="4"/>
+        <rect data-part="roof" x="205" y="45" width="670" height="7" rx="3"/>
+
+        <!-- Chimney (fixed colour) -->
+        <rect x="290" y="18" width="14" height="30" fill="#2a2a2a"/>
+        <rect x="286" y="14" width="22" height="6" fill="#b8962e"/>
+
+        <!-- Cabin sides -->
+        <rect data-part="cabin" x="200" y="64" width="680" height="79"/>
+
+        <!-- Panels -->
+        <rect data-part="panels" x="220" y="74" width="180" height="60" rx="6"/>
+        <rect data-part="panels" x="440" y="74" width="180" height="60" rx="6"/>
+        <rect data-part="panels" x="660" y="74" width="180" height="60" rx="6"/>
+
+        <!-- Coachlines: outlines inset inside each panel -->
+        <rect data-part="coachline" data-paint="stroke" x="227" y="81" width="166" height="46" rx="4" fill="none" stroke-width="2.5"/>
+        <rect data-part="coachline" data-paint="stroke" x="447" y="81" width="166" height="46" rx="4" fill="none" stroke-width="2.5"/>
+        <rect data-part="coachline" data-paint="stroke" x="667" y="81" width="166" height="46" rx="4" fill="none" stroke-width="2.5"/>
+
+        <!-- Portholes (fixed colours: brass rim, dark glass) -->
+        <g fill="#27343a" stroke="#b8962e" stroke-width="4">
+          <circle cx="420" cy="104" r="11"/>
+          <circle cx="640" cy="104" r="11"/>
+          <circle cx="860" cy="104" r="11"/>
+        </g>
+
+        <!-- Tiller (fixed colour) -->
+        <path d="M948 143 L940 112 L990 104" stroke="#b8962e" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+        <!-- Water, drawn last so it covers the hull below the waterline -->
+        <rect x="0" y="198" width="1000" height="52" fill="#5f7f7a" opacity="0.9"/>
+      </svg>
+    </figure>
+
+    <!-- Colour controls. Each input's data-part matches a part of the drawing. -->
+    <section class="controls" aria-label="Paint colours">
+      <label><input type="color" data-part="cabin" value="#1f4d34"> Cabin sides</label>
+      <label><input type="color" data-part="panels" value="#6e1d25"> Panels</label>
+      <label><input type="color" data-part="coachline" value="#e9d9a6"> Coachline</label>
+      <label><input type="color" data-part="roof" value="#8b8676"> Roof and handrail</label>
+      <label><input type="color" data-part="gunwale" value="#6e1d25"> Gunwale</label>
+      <label><input type="color" data-part="hull" value="#1c1c1c"> Hull</label>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

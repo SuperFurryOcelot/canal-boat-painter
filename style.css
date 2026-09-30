@@ -1,0 +1,84 @@
+/* Colour and type settings, kept in one place so they are easy to change */
+:root {
+  --stone: #e7e4db;      /* page background, like a towpath wall */
+  --ink: #22302b;        /* main text */
+  --muted: #5b665f;      /* secondary text */
+  --sky: #dfe8e6;        /* background behind the boat */
+  --edge: #c9c4b6;       /* borders */
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 2rem 1.25rem 3rem;
+  background: var(--stone);
+  color: var(--ink);
+  font-family: "Alegreya", Georgia, serif;
+  font-size: 1.125rem;
+  line-height: 1.5;
+}
+
+header, main {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+h1 {
+  margin: 0 0 0.25rem;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.1;
+}
+
+header p {
+  margin: 0 0 1.5rem;
+  color: var(--muted);
+}
+
+.drawing {
+  margin: 0 0 1.5rem;
+  padding: 1rem 0 0;
+  background: var(--sky);
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.drawing svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Controls sit in a responsive grid that wraps on narrow screens */
+.controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem 1.5rem;
+}
+
+.controls label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+}
+
+.controls input[type="color"] {
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid var(--edge);
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+}
+
+.controls input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+.controls input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
+.controls input[type="color"]::-moz-color-swatch { border: none; border-radius: 50%; }
+
+.controls input[type="color"]:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+}

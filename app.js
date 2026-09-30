@@ -13,7 +13,6 @@ const PALETTE = [
   { name: 'Golden Yellow',   hex: '#d9a521' },
   { name: 'Orange',          hex: '#d8641e' },
   { name: 'Cream',           hex: '#e9d9a6' },
-  { name: 'Deep Cream',      hex: '#e4d39b' },
   { name: 'Off White',       hex: '#f4f1e8' },
   { name: 'Battleship Grey', hex: '#6f7375' },
   { name: 'Black',           hex: '#1c1c1c' }

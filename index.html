@@ -194,41 +194,51 @@
 </svg>
     </figure>
 
-    <!-- Colour controls. Each row has a part name, a row of palette swatches (added by app.js)
-         and a "Custom" picker for any other colour. The picker's data-part matches a part of
-         the drawing, and its value is that part's default colour. -->
-    <section class="controls" aria-label="Paint colours">
-      <div class="control">
-        <span class="control-name">Cabin sides</span>
-        <div class="swatches" role="group" aria-label="Cabin sides colours"></div>
-        <label class="custom"><input type="color" data-part="cabin" data-name="Cabin sides" value="#e9d9a6"> Custom</label>
-      </div>
-      <div class="control">
-        <span class="control-name">Panels</span>
-        <div class="swatches" role="group" aria-label="Panels colours"></div>
-        <label class="custom"><input type="color" data-part="panels" data-name="Panels" value="#1f4d34"> Custom</label>
-      </div>
-      <div class="control">
-        <span class="control-name">Coachline</span>
-        <div class="swatches" role="group" aria-label="Coachline colours"></div>
-        <label class="custom"><input type="color" data-part="coachline" data-name="Coachline" value="#e30b5d"> Custom</label>
-      </div>
-      <div class="control">
-        <span class="control-name">Roof</span>
-        <div class="swatches" role="group" aria-label="Roof colours"></div>
-        <label class="custom"><input type="color" data-part="roof" data-name="Roof" value="#e30b5d"> Custom</label>
-      </div>
-      <div class="control">
-        <span class="control-name">Gunwale</span>
-        <div class="swatches" role="group" aria-label="Gunwale colours"></div>
-        <label class="custom"><input type="color" data-part="gunwale" data-name="Gunwale" value="#e9d9a6"> Custom</label>
-      </div>
-      <div class="control">
-        <span class="control-name">Hull</span>
-        <div class="swatches" role="group" aria-label="Hull colours"></div>
-        <label class="custom"><input type="color" data-part="hull" data-name="Hull" value="#1c1c1c"> Custom</label>
-      </div>
-    </section>
+    <!-- Preset schemes. The buttons are added by app.js from the PRESETS list.
+         <details> makes the section collapsible without any JavaScript. -->
+    <details class="panel">
+      <summary>Preset schemes</summary>
+      <div class="presets" role="group" aria-label="Preset schemes"></div>
+    </details>
+
+    <details class="panel">
+      <summary>Colours</summary>
+      <!-- Colour controls. Each row has a part name, a row of palette swatches (added by app.js)
+           and a "Custom" picker for any other colour. The picker's data-part matches a part of
+           the drawing, and its value is that part's default colour. -->
+      <section class="controls" aria-label="Paint colours">
+        <div class="control">
+          <span class="control-name">Cabin sides</span>
+          <div class="swatches" role="group" aria-label="Cabin sides colours"></div>
+          <label class="custom"><input type="color" data-part="cabin" data-name="Cabin sides" value="#e9d9a6"> Custom</label>
+        </div>
+        <div class="control">
+          <span class="control-name">Panels</span>
+          <div class="swatches" role="group" aria-label="Panels colours"></div>
+          <label class="custom"><input type="color" data-part="panels" data-name="Panels" value="#1f4d34"> Custom</label>
+        </div>
+        <div class="control">
+          <span class="control-name">Coachline</span>
+          <div class="swatches" role="group" aria-label="Coachline colours"></div>
+          <label class="custom"><input type="color" data-part="coachline" data-name="Coachline" value="#e30b5d"> Custom</label>
+        </div>
+        <div class="control">
+          <span class="control-name">Roof</span>
+          <div class="swatches" role="group" aria-label="Roof colours"></div>
+          <label class="custom"><input type="color" data-part="roof" data-name="Roof" value="#e30b5d"> Custom</label>
+        </div>
+        <div class="control">
+          <span class="control-name">Gunwale</span>
+          <div class="swatches" role="group" aria-label="Gunwale colours"></div>
+          <label class="custom"><input type="color" data-part="gunwale" data-name="Gunwale" value="#e9d9a6"> Custom</label>
+        </div>
+        <div class="control">
+          <span class="control-name">Hull</span>
+          <div class="swatches" role="group" aria-label="Hull colours"></div>
+          <label class="custom"><input type="color" data-part="hull" data-name="Hull" value="#1c1c1c"> Custom</label>
+        </div>
+      </section>
+    </details>
 
     <!-- Actions -->
     <div class="actions">

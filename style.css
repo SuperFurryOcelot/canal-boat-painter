@@ -50,6 +50,80 @@ header p {
   height: auto;
 }
 
+/* Collapsible sections (preset schemes and colours) */
+.panel {
+  margin: 0 0 1rem;
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.panel summary {
+  padding: 0.6rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.panel summary:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.panel[open] summary {
+  border-bottom: 1px solid var(--edge);
+}
+
+.panel > :not(summary) {
+  padding: 1rem;
+}
+
+/* Preset scheme buttons */
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.preset {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font: inherit;
+  padding: 0.4rem 0.8rem 0.4rem 0.5rem;
+  color: var(--ink);
+  background: var(--sky);
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.preset:hover {
+  border-color: var(--muted);
+}
+
+.preset[aria-pressed="true"] {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+
+.preset:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* A small strip of the scheme's main colours */
+.preset-strip {
+  display: flex;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.preset-strip span {
+  width: 0.7rem;
+  height: 1.4rem;
+}
+
 /* Controls: one row per part, with its name, the palette swatches and a custom picker */
 .controls {
   display: flex;
@@ -129,7 +203,7 @@ header p {
 
 /* Action buttons below the colour pickers */
 .actions {
-  margin-top: 1.5rem;
+  margin-top: 0.5rem;
 }
 
 .actions button {

@@ -18,6 +18,30 @@ const PALETTE = [
   { name: 'Black',           hex: '#1c1c1c' }
 ];
 
+// Preset schemes. Each one names a palette colour for every part of the boat.
+// To add or change a scheme, edit this list. Colour names must match the PALETTE list above.
+const PRESETS = [
+  { name: 'Traditional Green',
+    colours: { cabin: 'Brunswick Green', panels: 'Signal Red', coachline: 'Golden Yellow', roof: 'Signal Red', gunwale: 'Black', hull: 'Black' } },
+  { name: 'Maroon and Cream',
+    colours: { cabin: 'Maroon', panels: 'Cream', coachline: 'Golden Yellow', roof: 'Maroon', gunwale: 'Cream', hull: 'Black' } },
+  { name: 'Royal Blue',
+    colours: { cabin: 'Navy Blue', panels: 'Royal Blue', coachline: 'Off White', roof: 'Battleship Grey', gunwale: 'Navy Blue', hull: 'Black' } },
+  { name: 'Plum and Gold',
+    colours: { cabin: 'Plum', panels: 'Maroon', coachline: 'Golden Yellow', roof: 'Cream', gunwale: 'Plum', hull: 'Black' } },
+  { name: 'Green and Cream',
+    colours: { cabin: 'Cream', panels: 'Mid Green', coachline: 'Maroon', roof: 'Mid Green', gunwale: 'Mid Green', hull: 'Black' } },
+  { name: 'Sky and Orange',
+    colours: { cabin: 'Sky Blue', panels: 'Navy Blue', coachline: 'Orange', roof: 'Off White', gunwale: 'Navy Blue', hull: 'Black' } }
+];
+
+// Look up a palette colour's hex value from its name
+function hexFor(colourName) {
+  const colour = PALETTE.find(function (c) { return c.name === colourName; });
+  if (!colour) console.error(`Preset colour "${colourName}" is not in the palette`);
+  return colour ? colour.hex : '#000000';
+}
+
 // Find every colour picker on the page. Each picker holds the current colour for its part.
 const pickers = document.querySelectorAll('input[type="color"][data-part]');
 
@@ -49,7 +73,45 @@ function setColour(picker, colour) {
   picker.value = colour;
   paintPart(picker.dataset.part, picker.value);
   showSelected(picker);
+  showSelectedPreset();
 }
+
+// Highlight a preset button if the boat currently matches that scheme exactly
+function showSelectedPreset() {
+  document.querySelectorAll('.preset').forEach(function (button) {
+    const preset = PRESETS[button.dataset.index];
+    const matches = Array.from(pickers).every(function (picker) {
+      return hexFor(preset.colours[picker.dataset.part]) === picker.value;
+    });
+    button.setAttribute('aria-pressed', matches);
+  });
+}
+
+// Add a button for each preset, with a small strip showing its main colours
+const presetArea = document.querySelector('.presets');
+PRESETS.forEach(function (preset, index) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'preset';
+  button.dataset.index = index;
+
+  const strip = document.createElement('span');
+  strip.className = 'preset-strip';
+  ['cabin', 'panels', 'coachline', 'gunwale'].forEach(function (part) {
+    const chip = document.createElement('span');
+    chip.style.background = hexFor(preset.colours[part]);
+    strip.appendChild(chip);
+  });
+  button.appendChild(strip);
+  button.appendChild(document.createTextNode(preset.name));
+
+  button.addEventListener('click', function () {
+    pickers.forEach(function (picker) {
+      setColour(picker, hexFor(preset.colours[picker.dataset.part]));
+    });
+  });
+  presetArea.appendChild(button);
+});
 
 pickers.forEach(function (picker) {
   // Add a swatch button for each palette colour

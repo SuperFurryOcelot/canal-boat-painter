@@ -1,6 +1,6 @@
 # Canal Boat Painter: Project Checkpoint
 
-Last updated: 2 October 2026
+Last updated: 2 October 2026 (end of usability stage)
 
 ## Purpose
 
@@ -46,9 +46,9 @@ The app is static HTML, CSS and JavaScript, with no build tools, framework, serv
 
 | File | Role |
 |---|---|
-| `index.html` | Page layout, the SVG boat drawing, the colour controls and the default colours |
+| `index.html` | Page layout, the SVG boat drawing, the collapsible Preset schemes and Colours sections, the action buttons, and the default colours |
 | `style.css` | Appearance: palette, typography (Alegreya from Google Fonts), and a responsive layout |
-| `app.js` | The colour palette, the swatch buttons, the reset button, and painting the drawing |
+| `app.js` | The colour palette and preset lists, the swatch and preset buttons, painting the drawing, and the Reset, Download picture and Copy link buttons |
 
 ### How colouring works
 
@@ -61,6 +61,43 @@ The app is static HTML, CSS and JavaScript, with no build tools, framework, serv
 - The **Reset colours** button sets every picker back to its `defaultValue` (the value written in the HTML) and repaints. It does not ask for confirmation.
 - To add a new region: tag the shape in the SVG and add a matching control row in the HTML. The JavaScript does not need to change.
 - To add or change a palette colour: edit the `PALETTE` list at the top of `app.js`. Hex values must be lower case.
+
+### Page layout
+
+- Below the drawing are two collapsible sections, **Preset schemes** and **Colours**, both closed when the page loads. They use HTML's built-in `<details>` element, so no JavaScript is involved.
+- Below those, always visible, are three buttons: **Reset colours**, **Download picture** and **Copy link**.
+
+### Preset schemes
+
+- The `PRESETS` list in `app.js` sits under the palette. Each preset names a palette colour (by name, not hex) for every part.
+- If a preset names a colour that is not in the palette, an error appears in the browser console.
+- Clicking a preset button sets every part at once. The button shows a small strip of the scheme's cabin, panel, coachline and gunwale colours.
+- A preset's button stays highlighted while the boat matches that scheme exactly.
+
+| Preset | Cabin | Panels | Coachline | Roof | Gunwale | Hull |
+|---|---|---|---|---|---|---|
+| Traditional Green | Brunswick Green | Signal Red | Golden Yellow | Signal Red | Black | Black |
+| Maroon and Cream | Maroon | Cream | Golden Yellow | Maroon | Cream | Black |
+| Royal Blue | Navy Blue | Royal Blue | Off White | Battleship Grey | Navy Blue | Black |
+| Plum and Gold | Plum | Maroon | Golden Yellow | Cream | Plum | Black |
+| Green and Cream | Cream | Mid Green | Maroon | Mid Green | Mid Green | Black |
+| Sky and Orange | Sky Blue | Navy Blue | Orange | Off White | Navy Blue | Black |
+
+### Download picture
+
+- Saves the drawing as a PNG, 2000 x 500 pixels (twice the drawing's size).
+- The SVG is copied with its current colours, drawn onto a canvas over a sky background, and saved. The sky colour is read from `--sky` in `style.css`.
+- The file is named after the preset if the boat matches one (for example `canal-boat-royal-blue.png`), otherwise `canal-boat-scheme.png`.
+- It uses only built-in browser features and works when `index.html` is opened directly from the folder.
+
+### Shareable links
+
+- The current colours are kept at the end of the web address (the "hash"), for example `#cabin=4d2a4d&panels=6e1d25&...`. The address updates on every change without reloading the page.
+- Opening a link like that shows the same scheme. Invalid colours in a link are ignored, and those parts use their defaults.
+- When every part is at its default, the address is left clean, with no hash.
+- Pasting a different scheme link into an open page's address bar switches to that scheme.
+- **Copy link** copies the address and shows "Link copied". If the browser blocks copying, it suggests copying from the address bar instead.
+- Reset still returns to the HTML defaults, even on a page opened from a link.
 
 ### Palette
 
@@ -86,7 +123,7 @@ Fifteen traditional colours, offered for every part:
 
 The hex values are on-screen estimates and are not matched to any paint manufacturer's range.
 
-## Current state (version 1.2, committed)
+## Current state (version 1.3, committed)
 
 The drawing is a side view of a trad-stern narrowboat, with the bow on the left. The SVG `viewBox` is `0 0 1000 250`. The drawing was revised on 2 October 2026, and now carries `id` attributes and some `transform` and `style` attributes from that editing.
 
@@ -107,11 +144,12 @@ The drawing is a side view of a trad-stern narrowboat, with the bow on the left.
 - **Portholes:** three, with brass rims and dark glass, now at about x 264, 484 and 704, one in front of each panel.
 - **Chimney:** on the roof, at about x 559.
 - **Tiller:** redrawn as a brass swan neck rising from the stern, with a small base block. Both shapes are tagged `data-part="tiller"`, but there is no tiller control, so the colour stays fixed.
+- **Cabin shadow:** a soft gradient strip along the base of the cabin side (x 200, y 135, 680 x 8), clear at the top and darkening to 30% black at the bottom. It keeps the cabin side distinct from the gunwale when both are the same colour. The gradient is `cabin-shadow` in the SVG's `<defs>`; change `stop-opacity` to adjust its strength.
 - **Water:** covers the hull below the waterline.
 
 ## Open items
 
-- **Untracked files:** `boat.svg`, `tiller.svg` and the `Claude outputs` folder are in the local folder but not in Git. Decide whether to commit them, delete them, or list them in a `.gitignore` file.
+- **Untracked files:** `boat.svg` and the `Claude outputs` folder are in the local folder but not in Git. Decide whether to commit them, delete them, or list them in a `.gitignore` file.
 - **README.md:** Git shows it as changed, but only its line endings differ (Windows CRLF). It can be committed or restored with `git restore README.md`.
 - **Phones:** on narrow screens the boat scrolls out of view while working through the lower control rows. Keeping the drawing pinned at the top is a possible tweak.
 
@@ -126,6 +164,12 @@ The drawing is a side view of a trad-stern narrowboat, with the bow on the left.
 - Browsers' built-in colour pickers vary widely, and some offer only a few unsuitable colours. Rather than rely on them or add a third-party picker library, the app has its own swatches of traditional colours. The built-in picker is kept as the "Custom" option.
 - The palette was drafted by Claude and approved by Simon, with Raspberry added at Simon's request. Deep Cream was later removed, and the gunwale default changed to Cream.
 - Default colours live only in the HTML. The reset button reads them from there, so there is no duplicate list.
+- Presets refer to palette colours by name, for readability. Traditional Green's roof was changed to Signal Red at Simon's request.
+- The Preset schemes and Colours sections are collapsible and start closed, to keep the page clean.
+- The downloaded picture is twice the drawing's size so that it stays sharp.
+- Shareable links use the web address hash rather than any server or database, so the site stays static.
+- A fixed shadow at the base of the cabin side was added so the cabin and gunwale stay distinct when they share a colour.
+- When Claude checks the repository, it uses `GIT_OPTIONAL_LOCKS=0 git status` so that no `.git/index.lock` file is left behind.
 - The repository is public, which GitHub Pages on a free account requires.
 
 ## Roadmap
@@ -133,13 +177,8 @@ The drawing is a side view of a trad-stern narrowboat, with the bow on the left.
 1. ~~Setup: accounts, tools, repository, first push~~ Done
 2. ~~Basic prototype: SVG boat and colour pickers~~ Done
 3. ~~Deployment to GitHub Pages~~ Done
-4. **Usability features (in progress):**
-   - ~~Reset button~~ Done
-   - ~~Traditional colour palette swatches~~ Done
-   - Preset traditional schemes (next)
-   - PNG export
-   - Saving a scheme to a shareable link
-5. **Multiple designs:** split the drawing into modular parts, so users can swap bow and stern types (trad, semi-trad, cruiser) and change the boat's length.
+4. ~~**Usability features:** reset button, traditional colour palette swatches, preset schemes with collapsible sections, PNG download, shareable links, and a cabin shadow~~ Done
+5. **Multiple designs (next):** split the drawing into modular parts, so users can swap bow and stern types (trad, semi-trad, cruiser) and change the boat's length.
 6. **Later ideas:** an optional handrail in a new style, custom panel layouts, signwriting or boat name text, and roses and castles motifs.
 
 ## Working approach

@@ -20,53 +20,179 @@
          which app.js uses to find it. data-paint says whether the colour
          applies to the shape's fill (default) or its outline (stroke). -->
     <figure class="drawing">
-      <svg id="boat" viewBox="0 0 1000 250" role="img" aria-label="Side view of a narrowboat">
-
-        <!-- Hull, with a raised bow on the left -->
-        <path data-part="hull" d="M30 128 Q70 146 110 150 L950 150 L950 205 L130 205 Q60 200 30 128 Z"/>
-
-        <!-- Gunwale: from the top ledge down to the highest rubbing strake -->
-        <path data-part="gunwale" d="M34 122 Q74 140 110 143 L950 143 L950 170 L56 170 Q40 152 30 128 Z"/>
-
-        <!-- Rubbing strakes: darker lines that follow whatever colour is beneath them -->
-        <path d="M56 170 L950 170 M90 188 L950 188" stroke="rgba(0,0,0,0.35)" stroke-width="3" fill="none"/>
-
-        <!-- Roof -->
-        <rect data-part="roof" x="192" y="52" width="696" height="12" rx="4"/>
-        
-        <!-- Handrail -->
-        <rect data-part="handrail" x="205" y="45" width="670" height="7" rx="3"/>
-
-        <!-- Chimney (fixed colour) -->
-        <rect x="290" y="18" width="14" height="30" fill="#2a2a2a"/>
-        <rect x="286" y="14" width="22" height="6" fill="#b8962e"/>
-
-        <!-- Cabin sides -->
-        <rect data-part="cabin" x="200" y="64" width="680" height="79"/>
-
-        <!-- Panels -->
-        <rect data-part="panels" x="220" y="74" width="180" height="60" rx="6"/>
-        <rect data-part="panels" x="440" y="74" width="180" height="60" rx="6"/>
-        <rect data-part="panels" x="660" y="74" width="180" height="60" rx="6"/>
-
-        <!-- Coachlines: borders around the outside edge of each panel -->
-        <rect data-part="coachline" data-paint="stroke" x="220" y="74" width="180" height="60" rx="6" fill="none" stroke-width="2.5"/>
-        <rect data-part="coachline" data-paint="stroke" x="440" y="74" width="180" height="60" rx="6" fill="none" stroke-width="2.5"/>
-        <rect data-part="coachline" data-paint="stroke" x="660" y="74" width="180" height="60" rx="6" fill="none" stroke-width="2.5"/>
-
-        <!-- Portholes (fixed colours: brass rim, dark glass) -->
-        <g fill="#27343a" stroke="#b8962e" stroke-width="4">
-          <circle cx="420" cy="104" r="11"/>
-          <circle cx="640" cy="104" r="11"/>
-          <circle cx="860" cy="104" r="11"/>
-        </g>
-
-        <!-- Tiller (fixed colour) -->
-        <path d="M950 143 Q962 126 952 112 L902 104" stroke="#b8962e" stroke-width="4" fill="none" stroke-linecap="round"/>
-
-        <!-- Water, drawn last so it covers the hull below the waterline -->
-        <rect x="0" y="198" width="1000" height="52" fill="#5f7f7a" opacity="0.9"/>
-      </svg>
+      <svg
+   id="boat"
+   viewBox="0 0 1000 250"
+   role="img"
+   aria-label="Side view of a narrowboat"
+   version="1.1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs15" />
+  <!-- Hull, with a raised bow on the left -->
+  <path
+     data-part="hull"
+     d="M30 128 Q70 146 110 150 L950 150 L950 205 L130 205 Q60 200 30 128 Z"
+     id="path1" />
+  <!-- Gunwale: from the top ledge down to the highest rubbing strake -->
+  <path
+     data-part="gunwale"
+     d="M34 122 Q74 140 110 143 L950 143 L950 170 L56 170 Q40 152 30 128 Z"
+     id="path2" />
+  <!-- Rubbing strakes: darker lines that follow whatever colour is beneath them -->
+  <path
+     d="M56 170 L950 170 M90 188 L950 188"
+     stroke="rgba(0,0,0,0.35)"
+     stroke-width="3"
+     fill="none"
+     id="path3" />
+  <!-- Roof -->
+  <rect
+     data-part="roof"
+     x="197.68666"
+     y="52"
+     width="685.01886"
+     height="12"
+     rx="3.9368901"
+     id="rect3"
+     style="stroke-width:0.99208" />
+  <!-- Handrail -->
+  <!-- Chimney (fixed colour) -->
+  <rect
+     x="558.88751"
+     y="21.986237"
+     width="14"
+     height="30"
+     fill="#2a2a2a"
+     id="rect5" />
+  <rect
+     x="554.88751"
+     y="17.986237"
+     width="22"
+     height="6"
+     fill="#b8962e"
+     id="rect6" />
+  <!-- Cabin sides -->
+  <rect
+     data-part="cabin"
+     x="200"
+     y="64"
+     width="680"
+     height="79"
+     id="rect7" />
+  <!-- Panels -->
+  <rect
+     data-part="panels"
+     x="284"
+     y="74"
+     width="180"
+     height="60"
+     rx="6"
+     id="rect8" />
+  <rect
+     data-part="panels"
+     x="504"
+     y="74"
+     width="180"
+     height="60"
+     rx="6"
+     id="rect9" />
+  <rect
+     data-part="panels"
+     x="723.7149"
+     y="74"
+     width="142.28508"
+     height="60"
+     rx="4.742836"
+     id="rect10"
+     style="stroke-width:0.889085" />
+  <!-- Coachlines: borders around the outside edge of each panel -->
+  <rect
+     data-part="coachline"
+     data-paint="stroke"
+     x="284"
+     y="74"
+     width="180"
+     height="60"
+     rx="6"
+     fill="none"
+     stroke-width="2.5"
+     id="rect11" />
+  <rect
+     data-part="coachline"
+     data-paint="stroke"
+     x="504"
+     y="74"
+     width="180"
+     height="60"
+     rx="6"
+     fill="none"
+     stroke-width="2.5"
+     id="rect12" />
+  <rect
+     data-part="coachline"
+     data-paint="stroke"
+     x="723.7149"
+     y="74"
+     width="142.28508"
+     height="60"
+     rx="4.742836"
+     fill="none"
+     stroke-width="2.22271"
+     id="rect13" />
+  <!-- Portholes (fixed colours: brass rim, dark glass) -->
+  <g
+     fill="#27343a"
+     stroke="#b8962e"
+     stroke-width="4"
+     id="g15"
+     transform="translate(-156)">
+    <circle
+       cx="420"
+       cy="104"
+       r="11"
+       id="circle13" />
+    <circle
+       cx="640"
+       cy="104"
+       r="11"
+       id="circle14" />
+    <circle
+       cx="860"
+       cy="104"
+       r="11"
+       id="circle15" />
+  </g>
+  <!-- Tiller (fixed colour) -->
+  <rect
+     style="fill:#b8962e;fill-opacity:1;stroke-width:19.5213"
+     id="rect16"
+     width="6.9328895"
+     height="6.9328895"
+     x="934.55353"
+     y="136.08072"
+     data-part="tiller" />
+  <path
+     data-part="tiller"
+     d="m 947.08106,119.18346 c -27.98624,2.79976 1.89155,-33.701383 15.52003,-55.854228 3.73976,-6.078901 -0.0511,-11.596537 -7.21037,-11.626852 L 908.937,51.505683"
+     stroke="#b8962e"
+     stroke-width="5.59442"
+     fill="none"
+     stroke-linecap="round"
+     id="path15"
+     style="display:inline"
+     transform="matrix(0.99504441,0,0,1.1057939,-1.6341209,4.8063611)" />
+  <!-- Water, drawn last so it covers the hull below the waterline -->
+  <rect
+     x="0"
+     y="198"
+     width="1000"
+     height="52"
+     fill="#5f7f7a"
+     opacity="0.9"
+     id="rect15" />
+</svg>
     </figure>
 
     <!-- Colour controls. Each row has a part name, a row of palette swatches (added by app.js)
@@ -86,12 +212,12 @@
       <div class="control">
         <span class="control-name">Coachline</span>
         <div class="swatches" role="group" aria-label="Coachline colours"></div>
-        <label class="custom"><input type="color" data-part="coachline" data-name="Coachline" value="#6e1d25"> Custom</label>
+        <label class="custom"><input type="color" data-part="coachline" data-name="Coachline" value="#e30b5d"> Custom</label>
       </div>
       <div class="control">
         <span class="control-name">Roof</span>
         <div class="swatches" role="group" aria-label="Roof colours"></div>
-        <label class="custom"><input type="color" data-part="roof" data-name="Roof" value="#6e1d25"> Custom</label>
+        <label class="custom"><input type="color" data-part="roof" data-name="Roof" value="#e30b5d"> Custom</label>
       </div>
       <div class="control">
         <span class="control-name">Handrail</span>

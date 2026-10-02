@@ -74,7 +74,39 @@ function setColour(picker, colour) {
   paintPart(picker.dataset.part, picker.value);
   showSelected(picker);
   showSelectedPreset();
+  updateLink();
 }
+
+// Shareable links: the colours are kept in the end of the web address (the "hash"),
+// for example #cabin=e9d9a6&panels=1f4d34. Opening a link like that shows the same scheme.
+
+// Read colours from the web address. Anything that isn't a valid colour is ignored.
+function readLinkColours() {
+  const colours = {};
+  new URLSearchParams(location.hash.slice(1)).forEach(function (value, part) {
+    if (/^[0-9a-f]{6}$/i.test(value)) colours[part] = '#' + value.toLowerCase();
+  });
+  return colours;
+}
+
+// Write the current colours into the web address, without reloading the page.
+// If every part is at its default colour, the address is left clean.
+function updateLink() {
+  const allDefault = Array.from(pickers).every(function (picker) {
+    return picker.value === picker.defaultValue;
+  });
+  const hash = allDefault ? '' : '#' + Array.from(pickers).map(function (picker) {
+    return picker.dataset.part + '=' + picker.value.slice(1);
+  }).join('&');
+  try {
+    history.replaceState(null, '', location.pathname + location.search + hash);
+  } catch (error) {
+    // Some browsers block this for files opened from your computer. The live site is unaffected.
+  }
+}
+
+// Colours from the link the page was opened with (empty if there were none)
+const linkColours = readLinkColours();
 
 // Highlight a preset button if the boat currently matches that scheme exactly
 function showSelectedPreset() {
@@ -130,8 +162,8 @@ pickers.forEach(function (picker) {
     swatches.appendChild(swatch);
   });
 
-  // Apply the starting colour when the page loads
-  setColour(picker, picker.value);
+  // Apply the starting colour when the page loads: from the link if it has one, otherwise the default
+  setColour(picker, linkColours[picker.dataset.part] || picker.value);
 
   // Repaint whenever the user picks a custom colour
   picker.addEventListener('input', function () {
@@ -188,4 +220,23 @@ document.getElementById('download').addEventListener('click', function () {
     }, 'image/png');
   };
   image.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgText);
+});
+
+// If a different scheme link is pasted into the address bar of an open page, show that scheme
+window.addEventListener('hashchange', function () {
+  const colours = readLinkColours();
+  pickers.forEach(function (picker) {
+    setColour(picker, colours[picker.dataset.part] || picker.defaultValue);
+  });
+});
+
+// Copy link button: copy the web address, which always holds the current colours
+const shareStatus = document.getElementById('share-status');
+document.getElementById('share').addEventListener('click', function () {
+  navigator.clipboard.writeText(location.href).then(function () {
+    shareStatus.textContent = 'Link copied';
+  }).catch(function () {
+    shareStatus.textContent = 'Could not copy. You can copy the link from the address bar instead.';
+  });
+  setTimeout(function () { shareStatus.textContent = ''; }, 4000);
 });

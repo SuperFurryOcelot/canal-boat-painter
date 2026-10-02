@@ -29,7 +29,13 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
   <defs
-     id="defs15" />
+     id="defs15">
+    <!-- Cabin shadow: clear at the top, darkening towards the bottom -->
+    <linearGradient id="cabin-shadow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#000000" stop-opacity="0" />
+      <stop offset="1" stop-color="#000000" stop-opacity="0.1" />
+    </linearGradient>
+  </defs>
   <!-- Hull, with a raised bow on the left -->
   <path
      data-part="hull"
@@ -80,6 +86,15 @@
      width="680"
      height="79"
      id="rect7" />
+  <!-- Cabin shadow (fixed): a soft shadow along the base of the cabin side, so it stands
+       out from the gunwale when both are the same colour. Its strength is set in the
+       cabin-shadow gradient above. -->
+  <rect
+     x="200"
+     y="135"
+     width="680"
+     height="8"
+     fill="url(#cabin-shadow)" />
   <!-- Panels -->
   <rect
      data-part="panels"

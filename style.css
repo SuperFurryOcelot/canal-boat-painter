@@ -203,6 +203,9 @@ header p {
 
 /* Action buttons below the colour pickers */
 .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
   margin-top: 0.5rem;
 }
 

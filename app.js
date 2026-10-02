@@ -146,3 +146,46 @@ document.getElementById('reset').addEventListener('click', function () {
     setColour(picker, picker.defaultValue);
   });
 });
+
+// Download button: save the drawing as a PNG picture.
+// The SVG is copied, drawn onto a canvas at twice its normal size, and saved from there.
+document.getElementById('download').addEventListener('click', function () {
+  const svg = document.getElementById('boat');
+  const scale = 2;
+  const width = svg.viewBox.baseVal.width * scale;
+  const height = svg.viewBox.baseVal.height * scale;
+
+  // Copy the drawing with its current colours and give it a fixed size
+  const copy = svg.cloneNode(true);
+  copy.setAttribute('width', width);
+  copy.setAttribute('height', height);
+  const svgText = new XMLSerializer().serializeToString(copy);
+
+  const image = new Image();
+  image.onload = function () {
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext('2d');
+
+    // Fill in the sky first, using the same colour as the page (the --sky setting in style.css)
+    context.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--sky').trim();
+    context.fillRect(0, 0, width, height);
+    context.drawImage(image, 0, 0, width, height);
+
+    // Name the file after the preset if the boat matches one, otherwise use a general name
+    const activePreset = document.querySelector('.preset[aria-pressed="true"]');
+    const label = activePreset ? PRESETS[activePreset.dataset.index].name : 'scheme';
+    const fileName = 'canal-boat-' + label.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.png';
+
+    // Save the picture by clicking a temporary download link
+    canvas.toBlob(function (blob) {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = fileName;
+      link.click();
+      setTimeout(function () { URL.revokeObjectURL(link.href); }, 1000);
+    }, 'image/png');
+  };
+  image.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgText);
+});

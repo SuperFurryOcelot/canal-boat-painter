@@ -42,6 +42,20 @@ function hexFor(colourName) {
   return colour ? colour.hex : '#000000';
 }
 
+// The boat currently shown: a copy of DEFAULT_BOAT from boat.js, changed by the Boat controls
+const currentBoat = Object.assign({}, DEFAULT_BOAT);
+
+// Read the boat options from the web address. Anything that isn't valid is ignored.
+function readLinkBoat() {
+  const params = new URLSearchParams(location.hash.slice(1));
+  const length = Number(params.get('length'));
+  return { length: LENGTHS.includes(length) ? length : DEFAULT_BOAT.length };
+}
+
+// If the page was opened with a link that includes boat options, draw that boat
+Object.assign(currentBoat, readLinkBoat());
+drawBoat(currentBoat);
+
 // Find every colour picker on the page. Each picker holds the current colour for its part.
 const pickers = document.querySelectorAll('input[type="color"][data-part]');
 
@@ -77,8 +91,9 @@ function setColour(picker, colour) {
   updateLink();
 }
 
-// Shareable links: the colours are kept in the end of the web address (the "hash"),
-// for example #cabin=e9d9a6&panels=1f4d34. Opening a link like that shows the same scheme.
+// Shareable links: the boat options and colours are kept in the end of the web address
+// (the "hash"), for example #length=57&cabin=e9d9a6&panels=1f4d34. Opening a link like
+// that shows the same boat and scheme.
 
 // Read colours from the web address. Anything that isn't a valid colour is ignored.
 function readLinkColours() {
@@ -89,15 +104,15 @@ function readLinkColours() {
   return colours;
 }
 
-// Write the current colours into the web address, without reloading the page.
-// If every part is at its default colour, the address is left clean.
+// Write the current boat options and colours into the web address, without reloading the page.
+// Only settings that differ from the defaults are included, so a default boat has a clean address.
 function updateLink() {
-  const allDefault = Array.from(pickers).every(function (picker) {
-    return picker.value === picker.defaultValue;
+  const settings = [];
+  if (currentBoat.length !== DEFAULT_BOAT.length) settings.push('length=' + currentBoat.length);
+  pickers.forEach(function (picker) {
+    if (picker.value !== picker.defaultValue) settings.push(picker.dataset.part + '=' + picker.value.slice(1));
   });
-  const hash = allDefault ? '' : '#' + Array.from(pickers).map(function (picker) {
-    return picker.dataset.part + '=' + picker.value.slice(1);
-  }).join('&');
+  const hash = settings.length ? '#' + settings.join('&') : '';
   try {
     history.replaceState(null, '', location.pathname + location.search + hash);
   } catch (error) {
@@ -224,6 +239,9 @@ document.getElementById('download').addEventListener('click', function () {
 
 // If a different scheme link is pasted into the address bar of an open page, show that scheme
 window.addEventListener('hashchange', function () {
+  Object.assign(currentBoat, readLinkBoat());
+  lengthControl.value = currentBoat.length;
+  drawBoat(currentBoat);
   const colours = readLinkColours();
   pickers.forEach(function (picker) {
     setColour(picker, colours[picker.dataset.part] || picker.defaultValue);
@@ -239,4 +257,27 @@ document.getElementById('share').addEventListener('click', function () {
     shareStatus.textContent = 'Could not copy. You can copy the link from the address bar instead.';
   });
   setTimeout(function () { shareStatus.textContent = ''; }, 4000);
+});
+
+// Boat controls: redraw the boat, then repaint it in the current colours
+function redrawBoat() {
+  drawBoat(currentBoat);
+  pickers.forEach(function (picker) {
+    paintPart(picker.dataset.part, picker.value);
+  });
+  updateLink();
+}
+
+// Length: one choice for each length in the LENGTHS list
+const lengthControl = document.getElementById('length');
+LENGTHS.forEach(function (length) {
+  const option = document.createElement('option');
+  option.value = length;
+  option.textContent = length + ' ft';
+  lengthControl.appendChild(option);
+});
+lengthControl.value = currentBoat.length;
+lengthControl.addEventListener('change', function () {
+  currentBoat.length = Number(lengthControl.value);
+  redrawBoat();
 });

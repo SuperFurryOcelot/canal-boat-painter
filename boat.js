@@ -23,6 +23,9 @@ const DEFAULT_BOAT = {
   roof: [{ type: 'chimney', at: 0.54 }]
 };
 
+// Lengths offered in the length control, in feet
+const LENGTHS = [30, 35, 40, 45, 50, 55, 57, 60, 65, 70];
+
 // ---------------------------------------------------------------------------
 // Sizes. Drawing units are the same as in the original 55 ft drawing.
 // ---------------------------------------------------------------------------

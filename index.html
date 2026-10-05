@@ -20,7 +20,7 @@
          which app.js uses to find it. data-paint says whether the colour
          applies to the shape's fill (default) or its outline (stroke). -->
     <figure class="drawing">
-      <svg id="boat" viewBox="0 0 1240 250" role="img" aria-label="Side view of a narrowboat"
+      <svg id="boat" viewBox="0 60 1240 180" role="img" aria-label="Side view of a narrowboat"
            xmlns="http://www.w3.org/2000/svg">
         <defs>
           <!-- Cabin shadow: clear at the top, darkening towards the bottom -->
@@ -39,6 +39,8 @@
       <summary>Boat</summary>
       <div class="boat-options">
         <label>Length <select id="length"></select></label>
+        <label>Windows <select id="window-type"></select></label>
+        <label>Number of windows <select id="window-count"></select></label>
       </div>
     </details>
 
@@ -101,12 +103,14 @@
   <!-- Drawn pieces. boat.js copies these into the drawing and moves them into place.
        They are hidden here and only used as templates.
 
-       Coordinates match the original 55 ft drawing: bow tip at x 30, stern end at x 950,
-       cabin side from y 64 to y 143, gunwale top at y 143, waterline at about y 198.
+       Reference coordinates for bows and sterns: bow tip at x 30, stern end at x 950,
+       roof top at y 104, cabin side from y 113 to y 165, gunwale top at y 165,
+       upper rubbing strake at y 180, waterline at y 198. Heights are true to scale at
+       about 16.7 units per foot.
        To edit a piece in an SVG editor, copy its group into an .svg file with
-       viewBox="0 0 1000 250", edit it, and paste it back here.
+       viewBox="0 60 1000 180", edit it, and paste it back here.
 
-       Each piece has up to two layers:
+       Each bow and stern piece has up to two layers:
          data-layer="base"  drawn with the hull and gunwale, under the cabin
          data-layer="top"   drawn on top of everything except the water
        Paintable shapes use data-part, exactly as in the main drawing. -->
@@ -115,31 +119,41 @@
     <!-- Bow: standard, with a well deck. Anchored at the bow tip (x 30). -->
     <g id="bow-standard">
       <g data-layer="base">
-        <path data-part="hull" d="M30 128 Q70 146 110 150 L131 150 L131 205 L130 205 Q60 200 30 128 Z" />
-        <path data-part="gunwale" d="M34 122 Q74 140 110 143 L131 143 L131 170 L56 170 Q40 152 30 128 Z" />
+        <path data-part="hull" d="M30 150 Q70 168 110 172 L131 172 L131 205 L130 205 Q60 200 30 150 Z" />
+        <path data-part="gunwale" d="M34 144 Q74 162 110 165 L131 165 L131 180 L52 180 Q40 166 30 150 Z" />
       </g>
     </g>
 
     <!-- Stern: trad. Anchored at the stern end (x 950). -->
     <g id="stern-trad">
       <g data-layer="top">
-        <!-- Tiller (fixed colour) -->
-        <rect style="fill:#b8962e" width="6.9328895" height="6.9328895" x="934.55353" y="136.08072" />
-        <path d="m 947.08106,119.18346 c -27.98624,2.79976 1.89155,-33.701383 15.52003,-55.854228 3.73976,-6.078901 -0.0511,-11.596537 -7.21037,-11.626852 L 908.937,51.505683"
-              stroke="#b8962e" stroke-width="5.59442" fill="none" stroke-linecap="round"
-              transform="matrix(0.99504441,0,0,1.1057939,-1.6341209,4.8063611)" />
+        <!-- Tiller (fixed colour). Originally drawn standing on y 143 at 1.4 times this size,
+             so it is moved down to the gunwale top and scaled to 70% around its base. -->
+        <g transform="translate(950 165) scale(0.7) translate(-950 -143)">
+          <rect style="fill:#b8962e" width="6.9328895" height="6.9328895" x="934.55353" y="136.08072" />
+          <path d="m 947.08106,119.18346 c -27.98624,2.79976 1.89155,-33.701383 15.52003,-55.854228 3.73976,-6.078901 -0.0511,-11.596537 -7.21037,-11.626852 L 908.937,51.505683"
+                stroke="#b8962e" stroke-width="5.59442" fill="none" stroke-linecap="round"
+                transform="matrix(0.99504441,0,0,1.1057939,-1.6341209,4.8063611)" />
+        </g>
       </g>
     </g>
 
-    <!-- Window: porthole (fixed colours: brass rim, dark glass). Anchored at its centre (0, 0). -->
+    <!-- Window: porthole (fixed colours: brass rim, dark glass). Anchored at its centre (0, 0).
+         26 units across overall; if you change its size, update its width in WINDOW_TYPES in boat.js. -->
     <g id="window-porthole">
-      <circle cx="0" cy="0" r="11" fill="#27343a" stroke="#b8962e" stroke-width="4" />
+      <circle cx="0" cy="0" r="9" fill="#27343a" stroke="#b8962e" stroke-width="4" />
     </g>
 
-    <!-- Roof feature: chimney (fixed colours). Anchored at the middle of its base, on the roof (0, 52). -->
+    <!-- Window: hopper (fixed colours: brass frame, dark glass). Anchored at its centre (0, 0).
+         52 units wide overall; if you change its size, update its width in WINDOW_TYPES in boat.js. -->
+    <g id="window-hopper">
+      <rect x="-24" y="-13" width="48" height="26" rx="4" fill="#27343a" stroke="#b8962e" stroke-width="4" />
+    </g>
+
+    <!-- Roof feature: chimney (fixed colours). Anchored at the middle of its base, on the roof (0, 0). -->
     <g id="roof-chimney">
-      <rect x="-7" y="22" width="14" height="30" fill="#2a2a2a" />
-      <rect x="-11" y="18" width="22" height="6" fill="#b8962e" />
+      <rect x="-6" y="-24" width="12" height="24" fill="#2a2a2a" />
+      <rect x="-9" y="-27" width="18" height="5" fill="#b8962e" />
     </g>
   </svg>
 

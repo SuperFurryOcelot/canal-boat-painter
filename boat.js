@@ -27,29 +27,43 @@ const DEFAULT_BOAT = {
 const LENGTHS = [30, 35, 40, 45, 50, 55, 57, 60, 65, 70];
 
 // ---------------------------------------------------------------------------
-// Sizes. Drawing units are the same as in the original 55 ft drawing.
+// Sizes. Drawing units are the same as in the original 55 ft drawing horizontally.
+// Heights are true to scale, based on Sunflower: about 3 ft of cabin side above
+// the gunwale, and about 2 ft from the gunwale top down to the waterline.
 // ---------------------------------------------------------------------------
 
 const UNITS_PER_FOOT = 920 / 55;   // the original drawing is 55 ft over 920 units
 const MAX_LENGTH = 70;             // the picture is wide enough for the longest boat
 const VIEW_WIDTH = 1240;
-const VIEW_HEIGHT = 250;
+const VIEW_TOP = 60;               // the picture shows from y 60 down to y 240
+const VIEW_HEIGHT = 180;
 
-const CABIN_TOP = 64;
-const CABIN_BOTTOM = 143;          // also the top of the gunwale
-const GUNWALE_BOTTOM = 170;        // the upper rubbing strake
-const LOWER_STRAKE = 188;
-const HULL_TOP = 150;
+const CABIN_TOP = 113;
+const CABIN_BOTTOM = 165;          // also the top of the gunwale
+const GUNWALE_BOTTOM = 180;        // the upper rubbing strake
+const LOWER_STRAKE = 190;
+const HULL_TOP = 172;
 const HULL_BOTTOM = 205;
 const WATERLINE = 198;
-const ROOF_TOP = 52;
+const ROOF_TOP = 104;
 
 const PANEL_INSET = 20;            // gap between the cabin ends and the panels
 const PANEL_GAP = 20;              // gap between the two panels in the split style
-const PANEL_TOP = 74;
-const PANEL_HEIGHT = 60;
+const PANEL_TOP = 118;
+const PANEL_HEIGHT = 41;
 const REAR_PANEL_MAX = 6 * UNITS_PER_FOOT;  // the rear panel is at most 6 ft long
-const WINDOW_CENTRE_Y = 104;
+const WINDOW_CENTRE_Y = 138.5;
+
+// Window types.
+//   piece: the drawn piece in index.html
+//   width: overall width in drawing units, including the frame
+//   code:  the letter used for this type in shareable links
+//   name:  the name shown in the window type control
+const WINDOW_TYPES = {
+  porthole: { piece: 'window-porthole', width: 26, code: 'p', name: 'Porthole' },
+  hopper:   { piece: 'window-hopper',   width: 52, code: 'h', name: 'Hopper' }
+};
+const WINDOW_GAP = 12;             // the smallest gap allowed between windows
 
 // Bow types. Distances are in drawing units, measured back from the bow tip.
 //   anchorX:       where the bow tip is in the drawn piece
@@ -57,7 +71,7 @@ const WINDOW_CENTRE_Y = 104;
 //   cabinStart:    where the cabin begins
 //   strakeStarts:  where the upper and lower rubbing strakes begin
 const BOWS = {
-  standard: { piece: 'bow-standard', anchorX: 30, straightStart: 100, cabinStart: 170, strakeStarts: [26, 60] }
+  standard: { piece: 'bow-standard', anchorX: 30, straightStart: 100, cabinStart: 170, strakeStarts: [22, 44] }
 };
 
 // Stern types. Distances are in drawing units, measured forward from the stern end.
@@ -128,7 +142,8 @@ function layOut(boat) {
     ];
   }
 
-  // Windows go in the front (or only) panel, or along the cabin if there are no panels
+  // Windows go in the front (or only) panel, or along the cabin if there are no panels.
+  // They are spread evenly: each window sits in the middle of an equal share of the area.
   const windowArea = panels.length ? panels[0] : { x: panelFront, width: panelRear - panelFront };
   const spacing = windowArea.width / boat.windows.length;
   const windows = boat.windows.map(function (type, i) {
@@ -143,8 +158,14 @@ function layOut(boat) {
   return {
     bow: bow, stern: stern, bowX: bowX, sternX: sternX,
     cabinFront: cabinFront, cabinRear: cabinRear,
-    panels: panels, windows: windows, roofFeatures: roofFeatures
+    panels: panels, windowArea: windowArea, windows: windows, roofFeatures: roofFeatures
   };
+}
+
+// The most windows of one type that fit on a boat without crowding
+function maxWindows(boat, type) {
+  const area = layOut(boat).windowArea;
+  return Math.max(1, Math.floor(area.width / (WINDOW_TYPES[type].width + WINDOW_GAP)));
 }
 
 // ---------------------------------------------------------------------------
@@ -160,7 +181,7 @@ function drawBoat(boat) {
   const straightStart = plan.bowX + plan.bow.straightStart;
   const cabinWidth = plan.cabinRear - plan.cabinFront;
 
-  svg.setAttribute('viewBox', `0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`);
+  svg.setAttribute('viewBox', `0 ${VIEW_TOP} ${VIEW_WIDTH} ${VIEW_HEIGHT}`);
   drawing.replaceChildren();
 
   // Straight hull
@@ -184,11 +205,11 @@ function drawBoat(boat) {
 
   // Roof, slightly overhanging the cabin at each end
   addShape(drawing, 'rect', { 'data-part': 'roof', x: plan.cabinFront - 2.3, y: ROOF_TOP,
-    width: cabinWidth + 5, height: CABIN_TOP - ROOF_TOP, rx: 3.9 });
+    width: cabinWidth + 5, height: CABIN_TOP - ROOF_TOP, rx: 3 });
 
   // Roof features, such as the chimney
   plan.roofFeatures.forEach(function (feature) {
-    addPiece(drawing, 'roof-' + feature.type, null, feature.x, 0);
+    addPiece(drawing, 'roof-' + feature.type, null, feature.x, ROOF_TOP);
   });
 
   // Cabin side
@@ -196,8 +217,8 @@ function drawBoat(boat) {
     width: cabinWidth, height: CABIN_BOTTOM - CABIN_TOP });
 
   // Cabin shadow (fixed): keeps the cabin side distinct from the gunwale
-  addShape(drawing, 'rect', { x: plan.cabinFront, y: CABIN_BOTTOM - 8,
-    width: cabinWidth, height: 8, fill: 'url(#cabin-shadow)' });
+  addShape(drawing, 'rect', { x: plan.cabinFront, y: CABIN_BOTTOM - 6,
+    width: cabinWidth, height: 6, fill: 'url(#cabin-shadow)' });
 
   // Panels, then coachlines around their outside edge
   plan.panels.forEach(function (panel) {
@@ -212,7 +233,7 @@ function drawBoat(boat) {
 
   // Windows
   plan.windows.forEach(function (item) {
-    addPiece(drawing, 'window-' + item.type, null, item.x, WINDOW_CENTRE_Y);
+    addPiece(drawing, WINDOW_TYPES[item.type].piece, null, item.x, WINDOW_CENTRE_Y);
   });
 
   // Bow and stern: details drawn on top, such as the tiller
@@ -220,7 +241,7 @@ function drawBoat(boat) {
   addPiece(drawing, plan.stern.piece, 'top', sternShift, 0);
 
   // Water, drawn last so it covers the hull below the waterline
-  addShape(drawing, 'rect', { x: 0, y: WATERLINE, width: VIEW_WIDTH, height: VIEW_HEIGHT - WATERLINE,
+  addShape(drawing, 'rect', { x: 0, y: WATERLINE, width: VIEW_WIDTH, height: VIEW_TOP + VIEW_HEIGHT - WATERLINE,
     fill: '#5f7f7a', opacity: 0.9 });
 }
 

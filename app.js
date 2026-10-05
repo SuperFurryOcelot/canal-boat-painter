@@ -45,15 +45,39 @@ function hexFor(colourName) {
 // The boat currently shown: a copy of DEFAULT_BOAT from boat.js, changed by the Boat controls
 const currentBoat = Object.assign({}, DEFAULT_BOAT);
 
-// Read the boat options from the web address. Anything that isn't valid is ignored.
+// Windows are written in links as one letter per window, from bow to stern (see WINDOW_TYPES).
+function windowCodes(windows) {
+  return windows.map(function (type) { return WINDOW_TYPES[type].code; }).join('');
+}
+function windowsFromCodes(codes) {
+  const types = Object.keys(WINDOW_TYPES);
+  const windows = codes.split('').map(function (code) {
+    return types.find(function (type) { return WINDOW_TYPES[type].code === code; });
+  });
+  return windows.length && windows.every(Boolean) ? windows : null;
+}
+
+// Read the boat options from the web address. Anything that isn't valid uses the default.
 function readLinkBoat() {
   const params = new URLSearchParams(location.hash.slice(1));
   const length = Number(params.get('length'));
-  return { length: LENGTHS.includes(length) ? length : DEFAULT_BOAT.length };
+  return {
+    length: LENGTHS.includes(length) ? length : DEFAULT_BOAT.length,
+    windows: windowsFromCodes(params.get('windows') || '') || DEFAULT_BOAT.windows.slice()
+  };
+}
+
+// If there are more windows than fit, drop windows from the rear until they do
+function fitWindows(boat) {
+  const widest = boat.windows.reduce(function (a, b) {
+    return WINDOW_TYPES[a].width >= WINDOW_TYPES[b].width ? a : b;
+  });
+  boat.windows = boat.windows.slice(0, maxWindows(boat, widest));
 }
 
 // If the page was opened with a link that includes boat options, draw that boat
 Object.assign(currentBoat, readLinkBoat());
+fitWindows(currentBoat);
 drawBoat(currentBoat);
 
 // Find every colour picker on the page. Each picker holds the current colour for its part.
@@ -109,6 +133,9 @@ function readLinkColours() {
 function updateLink() {
   const settings = [];
   if (currentBoat.length !== DEFAULT_BOAT.length) settings.push('length=' + currentBoat.length);
+  if (windowCodes(currentBoat.windows) !== windowCodes(DEFAULT_BOAT.windows)) {
+    settings.push('windows=' + windowCodes(currentBoat.windows));
+  }
   pickers.forEach(function (picker) {
     if (picker.value !== picker.defaultValue) settings.push(picker.dataset.part + '=' + picker.value.slice(1));
   });
@@ -240,7 +267,8 @@ document.getElementById('download').addEventListener('click', function () {
 // If a different scheme link is pasted into the address bar of an open page, show that scheme
 window.addEventListener('hashchange', function () {
   Object.assign(currentBoat, readLinkBoat());
-  lengthControl.value = currentBoat.length;
+  fitWindows(currentBoat);
+  showBoatOptions();
   drawBoat(currentBoat);
   const colours = readLinkColours();
   pickers.forEach(function (picker) {
@@ -276,8 +304,48 @@ LENGTHS.forEach(function (length) {
   option.textContent = length + ' ft';
   lengthControl.appendChild(option);
 });
-lengthControl.value = currentBoat.length;
 lengthControl.addEventListener('change', function () {
   currentBoat.length = Number(lengthControl.value);
-  redrawBoat();
+  changeWindows(windowTypeControl.value, Number(windowCountControl.value));
 });
+
+// Window type: one choice for each type in WINDOW_TYPES
+const windowTypeControl = document.getElementById('window-type');
+Object.keys(WINDOW_TYPES).forEach(function (type) {
+  const option = document.createElement('option');
+  option.value = type;
+  option.textContent = WINDOW_TYPES[type].name;
+  windowTypeControl.appendChild(option);
+});
+windowTypeControl.addEventListener('change', function () {
+  changeWindows(windowTypeControl.value, Number(windowCountControl.value));
+});
+
+// Number of windows: from 1 up to as many as fit on this boat
+const windowCountControl = document.getElementById('window-count');
+windowCountControl.addEventListener('change', function () {
+  changeWindows(windowTypeControl.value, Number(windowCountControl.value));
+});
+
+// Set the windows to a number of one type (reduced if they don't all fit), then redraw
+function changeWindows(type, count) {
+  currentBoat.windows = Array(Math.min(count, maxWindows(currentBoat, type))).fill(type);
+  showBoatOptions();
+  redrawBoat();
+}
+
+// Make the Boat controls show the current boat
+function showBoatOptions() {
+  lengthControl.value = currentBoat.length;
+  const type = currentBoat.windows[0];
+  windowTypeControl.value = type;
+  windowCountControl.replaceChildren();
+  for (let count = 1; count <= maxWindows(currentBoat, type); count++) {
+    const option = document.createElement('option');
+    option.value = count;
+    option.textContent = count;
+    windowCountControl.appendChild(option);
+  }
+  windowCountControl.value = currentBoat.windows.length;
+}
+showBoatOptions();

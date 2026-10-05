@@ -19,20 +19,27 @@ const PALETTE = [
 ];
 
 // Preset schemes. Each one names a palette colour for every part of the boat.
+// The hatch matches the roof in every preset.
 // To add or change a scheme, edit this list. Colour names must match the PALETTE list above.
 const PRESETS = [
   { name: 'Traditional Green',
-    colours: { cabin: 'Brunswick Green', panels: 'Signal Red', coachline: 'Golden Yellow', roof: 'Signal Red', gunwale: 'Black', hull: 'Black' } },
+    colours: { cabin: 'Brunswick Green', panels: 'Signal Red', coachline: 'Golden Yellow', roof: 'Signal Red', gunwale: 'Black', hull: 'Black',
+                hatch: 'Signal Red', pramcover: 'Brunswick Green' } },
   { name: 'Maroon and Cream',
-    colours: { cabin: 'Maroon', panels: 'Cream', coachline: 'Golden Yellow', roof: 'Maroon', gunwale: 'Cream', hull: 'Black' } },
+    colours: { cabin: 'Maroon', panels: 'Cream', coachline: 'Golden Yellow', roof: 'Maroon', gunwale: 'Cream', hull: 'Black',
+                hatch: 'Maroon', pramcover: 'Maroon' } },
   { name: 'Royal Blue',
-    colours: { cabin: 'Navy Blue', panels: 'Royal Blue', coachline: 'Off White', roof: 'Battleship Grey', gunwale: 'Navy Blue', hull: 'Black' } },
+    colours: { cabin: 'Navy Blue', panels: 'Royal Blue', coachline: 'Off White', roof: 'Battleship Grey', gunwale: 'Navy Blue', hull: 'Black',
+                hatch: 'Battleship Grey', pramcover: 'Navy Blue' } },
   { name: 'Plum and Gold',
-    colours: { cabin: 'Plum', panels: 'Maroon', coachline: 'Golden Yellow', roof: 'Cream', gunwale: 'Plum', hull: 'Black' } },
+    colours: { cabin: 'Plum', panels: 'Maroon', coachline: 'Golden Yellow', roof: 'Cream', gunwale: 'Plum', hull: 'Black',
+                hatch: 'Cream', pramcover: 'Plum' } },
   { name: 'Green and Cream',
-    colours: { cabin: 'Cream', panels: 'Mid Green', coachline: 'Maroon', roof: 'Mid Green', gunwale: 'Mid Green', hull: 'Black' } },
+    colours: { cabin: 'Cream', panels: 'Mid Green', coachline: 'Maroon', roof: 'Mid Green', gunwale: 'Mid Green', hull: 'Black',
+                hatch: 'Mid Green', pramcover: 'Mid Green' } },
   { name: 'Sky and Orange',
-    colours: { cabin: 'Sky Blue', panels: 'Navy Blue', coachline: 'Orange', roof: 'Off White', gunwale: 'Navy Blue', hull: 'Black' } }
+    colours: { cabin: 'Sky Blue', panels: 'Navy Blue', coachline: 'Orange', roof: 'Off White', gunwale: 'Navy Blue', hull: 'Black',
+                hatch: 'Off White', pramcover: 'Navy Blue' } }
 ];
 
 // Look up a palette colour's hex value from its name

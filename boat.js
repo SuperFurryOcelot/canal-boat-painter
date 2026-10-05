@@ -11,6 +11,7 @@
 //   length:  in feet
 //   bow:     a key of BOWS
 //   stern:   a key of STERNS
+//   pramCover: true to show a pram cover (semi-trad and cruiser sterns only)
 //   panels:  'single', 'split' or 'none'
 //   windows: window types from bow to stern, spread evenly along the window area
 //   roof:    roof features; "at" is how far along the cabin, from 0 (front) to 1 (rear)
@@ -18,6 +19,7 @@ const DEFAULT_BOAT = {
   length: 55,
   bow: 'standard',
   stern: 'trad',
+  pramCover: false,
   panels: 'split',
   windows: ['porthole', 'porthole', 'porthole'],
   roof: [{ type: 'chimney', at: 0.54 }]
@@ -35,8 +37,8 @@ const LENGTHS = [30, 35, 40, 45, 50, 55, 57, 60, 65, 70];
 const UNITS_PER_FOOT = 920 / 55;   // the original drawing is 55 ft over 920 units
 const MAX_LENGTH = 70;             // the picture is wide enough for the longest boat
 const VIEW_WIDTH = 1240;
-const VIEW_TOP = 60;               // the picture shows from y 60 down to y 240
-const VIEW_HEIGHT = 180;
+const VIEW_TOP = 40;               // the picture shows from y 40 down to y 240
+const VIEW_HEIGHT = 200;
 
 const CABIN_TOP = 113;
 const CABIN_BOTTOM = 165;          // also the top of the gunwale
@@ -75,10 +77,14 @@ const BOWS = {
 };
 
 // Stern types. Distances are in drawing units, measured forward from the stern end.
-//   anchorX:  where the stern end is in the drawn piece
-//   cabinEnd: where the cabin ends
+//   anchorX:   where the stern end is in the drawn piece
+//   cabinEnd:  where the roofed cabin ends (the rear hatch sits at the rear of the roof)
+//   wallsEnd:  semi-trad only: where the open-topped cabin side walls end
+//   pramCover: the drawn pram cover piece, for sterns that can have one
 const STERNS = {
-  trad: { piece: 'stern-trad', anchorX: 950, cabinEnd: 70 }
+  trad:     { piece: 'stern-trad',     anchorX: 950, cabinEnd: 70 },
+  semitrad: { piece: 'stern-semitrad', anchorX: 950, cabinEnd: 176, wallsEnd: 48, pramCover: 'pram-semitrad' },
+  cruiser:  { piece: 'stern-cruiser',  anchorX: 950, cabinEnd: 134, pramCover: 'pram-cruiser' }
 };
 
 // ---------------------------------------------------------------------------
@@ -212,13 +218,23 @@ function drawBoat(boat) {
     addPiece(drawing, 'roof-' + feature.type, null, feature.x, ROOF_TOP);
   });
 
-  // Cabin side
+  // Rear hatch, sliding cover closed at the rear of the roof
+  addPiece(drawing, 'roof-hatch', null, plan.cabinRear + 2.5, ROOF_TOP);
+
+  // Cabin side. On a semi-trad it carries on past the roof as open-topped walls.
+  const sideRear = plan.stern.wallsEnd !== undefined ? plan.sternX - plan.stern.wallsEnd : plan.cabinRear;
   addShape(drawing, 'rect', { 'data-part': 'cabin', x: plan.cabinFront, y: CABIN_TOP,
-    width: cabinWidth, height: CABIN_BOTTOM - CABIN_TOP });
+    width: sideRear - plan.cabinFront, height: CABIN_BOTTOM - CABIN_TOP });
+
+  // Semi-trad: a capping strip in the roof colour along the top of the open walls
+  if (sideRear > plan.cabinRear) {
+    addShape(drawing, 'rect', { 'data-part': 'roof', x: plan.cabinRear + 2.5, y: CABIN_TOP - 3,
+      width: sideRear - plan.cabinRear - 2.5, height: 3 });
+  }
 
   // Cabin shadow (fixed): keeps the cabin side distinct from the gunwale
   addShape(drawing, 'rect', { x: plan.cabinFront, y: CABIN_BOTTOM - 6,
-    width: cabinWidth, height: 6, fill: 'url(#cabin-shadow)' });
+    width: sideRear - plan.cabinFront, height: 6, fill: 'url(#cabin-shadow)' });
 
   // Panels, then coachlines around their outside edge
   plan.panels.forEach(function (panel) {
@@ -239,6 +255,12 @@ function drawBoat(boat) {
   // Bow and stern: details drawn on top, such as the tiller
   addPiece(drawing, plan.bow.piece, 'top', bowShift, 0);
   addPiece(drawing, plan.stern.piece, 'top', sternShift, 0);
+  addPiece(drawing, 'stern-tiller', null, sternShift, 0);
+
+  // Pram cover, if chosen and this stern can have one
+  if (boat.pramCover && plan.stern.pramCover) {
+    addPiece(drawing, plan.stern.pramCover, null, sternShift, 0);
+  }
 
   // Water, drawn last so it covers the hull below the waterline
   addShape(drawing, 'rect', { x: 0, y: WATERLINE, width: VIEW_WIDTH, height: VIEW_TOP + VIEW_HEIGHT - WATERLINE,

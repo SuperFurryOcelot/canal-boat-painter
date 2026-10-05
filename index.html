@@ -20,7 +20,7 @@
          which app.js uses to find it. data-paint says whether the colour
          applies to the shape's fill (default) or its outline (stroke). -->
     <figure class="drawing">
-      <svg id="boat" viewBox="0 60 1240 180" role="img" aria-label="Side view of a narrowboat"
+      <svg id="boat" viewBox="0 40 1240 200" role="img" aria-label="Side view of a narrowboat"
            xmlns="http://www.w3.org/2000/svg">
         <defs>
           <!-- Cabin shadow: clear at the top, darkening towards the bottom -->
@@ -78,6 +78,11 @@
           <label class="custom"><input type="color" data-part="roof" data-name="Roof" value="#e30b5d"> Custom</label>
         </div>
         <div class="control">
+          <span class="control-name">Hatch</span>
+          <div class="swatches" role="group" aria-label="Hatch colours"></div>
+          <label class="custom"><input type="color" data-part="hatch" data-name="Hatch" value="#e30b5d"> Custom</label>
+        </div>
+        <div class="control">
           <span class="control-name">Gunwale</span>
           <div class="swatches" role="group" aria-label="Gunwale colours"></div>
           <label class="custom"><input type="color" data-part="gunwale" data-name="Gunwale" value="#e9d9a6"> Custom</label>
@@ -86,6 +91,11 @@
           <span class="control-name">Hull</span>
           <div class="swatches" role="group" aria-label="Hull colours"></div>
           <label class="custom"><input type="color" data-part="hull" data-name="Hull" value="#1c1c1c"> Custom</label>
+        </div>
+        <div class="control">
+          <span class="control-name">Pram cover</span>
+          <div class="swatches" role="group" aria-label="Pram cover colours"></div>
+          <label class="custom"><input type="color" data-part="pramcover" data-name="Pram cover" value="#1c2a44"> Custom</label>
         </div>
       </section>
     </details>
@@ -108,7 +118,7 @@
        upper rubbing strake at y 180, waterline at y 198. Heights are true to scale at
        about 16.7 units per foot.
        To edit a piece in an SVG editor, copy its group into an .svg file with
-       viewBox="0 60 1000 180", edit it, and paste it back here.
+       viewBox="0 40 1000 200", edit it, and paste it back here.
 
        Each bow and stern piece has up to two layers:
          data-layer="base"  drawn with the hull and gunwale, under the cabin
@@ -124,18 +134,52 @@
       </g>
     </g>
 
-    <!-- Stern: trad. Anchored at the stern end (x 950). -->
-    <g id="stern-trad">
+    <!-- Stern: trad. Anchored at the stern end (x 950). The cabin and roof run almost to the
+         stern, leaving a short counter deck. Nothing extra is drawn beyond the tiller. -->
+    <g id="stern-trad"></g>
+
+    <!-- Stern: semi-trad. Anchored at the stern end (x 950). The roof ends at x 774 and the
+         open-topped cabin side walls carry on to x 902; boat.js draws both. -->
+    <g id="stern-semitrad"></g>
+
+    <!-- Stern: cruiser. Anchored at the stern end (x 950). The roof ends at x 816, leaving an
+         open rear deck with a rail around it (fixed colour). -->
+    <g id="stern-cruiser">
       <g data-layer="top">
-        <!-- Tiller (fixed colour). Originally drawn standing on y 143 at 1.4 times this size,
-             so it is moved down to the gunwale top and scaled to 70% around its base. -->
-        <g transform="translate(950 165) scale(0.7) translate(-950 -143)">
-          <rect style="fill:#b8962e" width="6.9328895" height="6.9328895" x="934.55353" y="136.08072" />
-          <path d="m 947.08106,119.18346 c -27.98624,2.79976 1.89155,-33.701383 15.52003,-55.854228 3.73976,-6.078901 -0.0511,-11.596537 -7.21037,-11.626852 L 908.937,51.505683"
-                stroke="#b8962e" stroke-width="5.59442" fill="none" stroke-linecap="round"
-                transform="matrix(0.99504441,0,0,1.1057939,-1.6341209,4.8063611)" />
-        </g>
+        <path d="M 816.4 140 L 935.6 140 Q 945.2 140 946.8 152 L 947.6 165" fill="none" stroke="#3a3a3a" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M 830 140 V 165 M 858.8 140 V 165 M 887.6 140 V 165 M 916.4 140 V 165" fill="none" stroke="#3a3a3a" stroke-width="2" />
       </g>
+    </g>
+
+    <!-- Tiller (fixed colour), used with every stern. Anchored at the stern end (x 950).
+         Originally drawn standing on y 143 at 1.4 times this size, so it is moved down to
+         the gunwale top and scaled to 70% around its base. -->
+    <g id="stern-tiller">
+      <g transform="translate(950 165) scale(0.7) translate(-950 -143)">
+        <rect style="fill:#b8962e" width="6.9328895" height="6.9328895" x="934.55353" y="136.08072" />
+        <path d="m 947.08106,119.18346 c -27.98624,2.79976 1.89155,-33.701383 15.52003,-55.854228 3.73976,-6.078901 -0.0511,-11.596537 -7.21037,-11.626852 L 908.937,51.505683"
+              stroke="#b8962e" stroke-width="5.59442" fill="none" stroke-linecap="round"
+              transform="matrix(0.99504441,0,0,1.1057939,-1.6341209,4.8063611)" />
+      </g>
+    </g>
+
+    <!-- Pram cover for a semi-trad: a canvas hood over the open well, from the rear of the
+         roof back to the end of the walls. Anchored at the stern end (x 950).
+         The cover is paintable; the clear windows are fixed. -->
+    <g id="pram-semitrad">
+      <path data-part="pramcover" d="M768 113 L773 66 Q774 60 781 60 L884 60 Q893 60 896 68 L905 113 Z"
+            stroke="rgba(0,0,0,0.3)" stroke-width="1.5" />
+      <path d="M781 68 L833 68 L833 100 L778 100 Z M840 68 L885 68 Q888 68 889 71 L896 100 L840 100 Z"
+            fill="#dfe8ec" opacity="0.55" />
+    </g>
+
+    <!-- Pram cover for a cruiser: a canvas hood over the whole rear deck, from the rear of the
+         roof down to the gunwale at the stern. Anchored at the stern end (x 950). -->
+    <g id="pram-cruiser">
+      <path data-part="pramcover" d="M 812.4 165 L 812.4 113 L 814.8 82 Q 815.6 76 821.2 76 L 924.4 76 Q 931.6 76 934 84 L 946 165 Z"
+            stroke="rgba(0,0,0,0.3)" stroke-width="1.5" />
+      <path d="M 821.2 84 L 870 84 L 870 116 L 818.8 116 Z M 875.6 84 L 924.4 84 Q 927.6 84 928.4 87 L 934.8 116 L 875.6 116 Z"
+            fill="#dfe8ec" opacity="0.55" />
     </g>
 
     <!-- Window: porthole (fixed colours: brass rim, dark glass). Anchored at its centre (0, 0).
@@ -148,6 +192,12 @@
          52 units wide overall; if you change its size, update its width in WINDOW_TYPES in boat.js. -->
     <g id="window-hopper">
       <rect x="-24" y="-13" width="48" height="26" rx="4" fill="#27343a" stroke="#b8962e" stroke-width="4" />
+    </g>
+
+    <!-- Rear hatch (paintable): the sliding cover, shown closed at the rear of the roof.
+         Anchored at the rear end of the roof, on the roof top (0, 0). -->
+    <g id="roof-hatch">
+      <rect data-part="hatch" x="-44" y="-5" width="45" height="6" rx="2" />
     </g>
 
     <!-- Roof feature: chimney (fixed colours). Anchored at the middle of its base, on the roof (0, 0). -->

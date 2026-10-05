@@ -126,11 +126,13 @@
        Paintable shapes use data-part, exactly as in the main drawing. -->
   <svg id="pieces" style="display: none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
 
-    <!-- Bow: standard, with a well deck. Anchored at the bow tip (x 30). -->
+    <!-- Bow: standard. A raked stem with a small rise at the tip, based on Sunflower.
+         Anchored at the bow tip (x 30). The cabin starts 140 units (about 8.4 ft) back from
+         the tip; this is cabinStart in BOWS in boat.js. -->
     <g id="bow-standard">
       <g data-layer="base">
-        <path data-part="hull" d="M30 150 Q70 168 110 172 L131 172 L131 205 L130 205 Q60 200 30 150 Z" />
-        <path data-part="gunwale" d="M34 144 Q74 162 110 165 L131 165 L131 180 L52 180 Q40 166 30 150 Z" />
+        <path data-part="hull" d="M30 157 Q55 165 100 172 L131 172 L131 205 L60 205 Q42 200 36 185 Z" />
+        <path data-part="gunwale" d="M30 152 Q60 162 100 165 L131 165 L131 180 L40 180 Q33 168 30 157 Z" />
       </g>
     </g>
 

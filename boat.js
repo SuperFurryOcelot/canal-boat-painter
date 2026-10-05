@@ -73,7 +73,7 @@ const WINDOW_GAP = 12;             // the smallest gap allowed between windows
 //   cabinStart:    where the cabin begins
 //   strakeStarts:  where the upper and lower rubbing strakes begin
 const BOWS = {
-  standard: { piece: 'bow-standard', anchorX: 30, straightStart: 100, cabinStart: 170, strakeStarts: [22, 44] }
+  standard: { piece: 'bow-standard', anchorX: 30, straightStart: 100, cabinStart: 140, strakeStarts: [10, 9] }
 };
 
 // Stern types. Distances are in drawing units, measured forward from the stern end.

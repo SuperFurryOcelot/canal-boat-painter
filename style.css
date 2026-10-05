@@ -77,6 +77,24 @@ header p {
   padding: 1rem;
 }
 
+/* Boat preset buttons, above the boat options */
+.panel > .boat-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding-bottom: 0;
+}
+
+.boat-options input[type="checkbox"] {
+  width: 1.2rem;
+  height: 1.2rem;
+  accent-color: var(--ink);
+}
+
+.boat-options label:has(input:disabled) {
+  color: var(--muted);
+}
+
 /* Boat options */
 .boat-options {
   display: flex;
@@ -113,7 +131,8 @@ header p {
   gap: 0.6rem;
 }
 
-.preset {
+.preset,
+.boat-preset {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -126,7 +145,8 @@ header p {
   cursor: pointer;
 }
 
-.preset:hover {
+.preset:hover,
+.boat-preset:hover {
   border-color: var(--muted);
 }
 
@@ -135,7 +155,8 @@ header p {
   box-shadow: 0 0 0 1px var(--ink);
 }
 
-.preset:focus-visible {
+.preset:focus-visible,
+.boat-preset:focus-visible {
   outline: 3px solid var(--ink);
   outline-offset: 2px;
 }

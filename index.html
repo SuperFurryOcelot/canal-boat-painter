@@ -37,8 +37,13 @@
     <!-- Boat options. The length choices are added by app.js from the LENGTHS list in boat.js. -->
     <details class="panel">
       <summary>Boat</summary>
+      <!-- Boat presets: buttons added by app.js from the BOAT_PRESETS list -->
+      <div class="boat-presets" role="group" aria-label="Boat presets"></div>
       <div class="boat-options">
         <label>Length <select id="length"></select></label>
+        <label>Stern <select id="stern"></select></label>
+        <label><input type="checkbox" id="pram-cover"> Pram cover</label>
+        <label>Panels <select id="panel-style"></select></label>
         <label>Windows <select id="window-type"></select></label>
         <label>Number of windows <select id="window-count"></select></label>
       </div>
@@ -200,6 +205,15 @@
          Anchored at the rear end of the roof, on the roof top (0, 0). -->
     <g id="roof-hatch">
       <rect data-part="hatch" x="-44" y="-5" width="45" height="6" rx="2" />
+    </g>
+
+    <!-- Side hatch doors: a pair of doors in the cabin side, outlined so the cabin colour
+         shows through. Anchored at its centre (0, 0). 40 units wide; if you change its size,
+         update its width in WINDOW_TYPES in boat.js. -->
+    <g id="window-sidehatch">
+      <rect x="-20" y="-20" width="40" height="40" rx="1.5" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="1.5" />
+      <path d="M0 -20 V20" stroke="rgba(0,0,0,0.4)" stroke-width="1.2" />
+      <path d="M-20 -13 h4 M-20 13 h4 M20 -13 h-4 M20 13 h-4" stroke="rgba(0,0,0,0.5)" stroke-width="2" />
     </g>
 
     <!-- Roof feature: chimney (fixed colours). Anchored at the middle of its base, on the roof (0, 0). -->

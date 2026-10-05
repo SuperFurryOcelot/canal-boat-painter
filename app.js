@@ -49,6 +49,17 @@ function hexFor(colourName) {
   return colour ? colour.hex : '#000000';
 }
 
+// Boat presets: a whole boat specification plus a colour for every part (palette names).
+// To add one, copy the Sunflower entry. Window letters: p porthole, h hopper, d side hatch.
+const BOAT_PRESETS = [
+  { name: 'Sunflower',
+    boat: { length: 65, bow: 'standard', stern: 'semitrad', pramCover: true, panels: 'none',
+            windows: ['hopper', 'porthole', 'hopper', 'hopper', 'sidehatch', 'hopper', 'porthole'],
+            roof: [{ type: 'chimney', at: 0.61 }] },
+    colours: { cabin: 'Battleship Grey', panels: 'Battleship Grey', coachline: 'Battleship Grey',
+               roof: 'Signal Red', hatch: 'Signal Red', gunwale: 'Black', hull: 'Black', pramcover: 'Navy Blue' } }
+];
+
 // The boat currently shown: a copy of DEFAULT_BOAT from boat.js, changed by the Boat controls
 const currentBoat = Object.assign({}, DEFAULT_BOAT);
 
@@ -68,18 +79,29 @@ function windowsFromCodes(codes) {
 function readLinkBoat() {
   const params = new URLSearchParams(location.hash.slice(1));
   const length = Number(params.get('length'));
+  const stern = params.get('stern');
+  const panels = params.get('panelstyle');
+  const chimney = Number(params.get('chimney'));
   return {
     length: LENGTHS.includes(length) ? length : DEFAULT_BOAT.length,
-    windows: windowsFromCodes(params.get('windows') || '') || DEFAULT_BOAT.windows.slice()
+    stern: STERNS[stern] ? stern : DEFAULT_BOAT.stern,
+    pramCover: params.has('pram') ? params.get('pram') === '1' : DEFAULT_BOAT.pramCover,
+    panels: PANEL_STYLES[panels] ? panels : DEFAULT_BOAT.panels,
+    windows: windowsFromCodes(params.get('windows') || '') || DEFAULT_BOAT.windows.slice(),
+    roof: chimney > 0 && chimney < 100 ? [{ type: 'chimney', at: chimney / 100 }] : DEFAULT_BOAT.roof
   };
+}
+
+// The widest type in a list of windows, used to work out how many fit
+function widestType(windows) {
+  return windows.reduce(function (a, b) {
+    return WINDOW_TYPES[a].width >= WINDOW_TYPES[b].width ? a : b;
+  });
 }
 
 // If there are more windows than fit, drop windows from the rear until they do
 function fitWindows(boat) {
-  const widest = boat.windows.reduce(function (a, b) {
-    return WINDOW_TYPES[a].width >= WINDOW_TYPES[b].width ? a : b;
-  });
-  boat.windows = boat.windows.slice(0, maxWindows(boat, widest));
+  boat.windows = boat.windows.slice(0, maxWindows(boat, widestType(boat.windows)));
 }
 
 // If the page was opened with a link that includes boat options, draw that boat
@@ -140,6 +162,10 @@ function readLinkColours() {
 function updateLink() {
   const settings = [];
   if (currentBoat.length !== DEFAULT_BOAT.length) settings.push('length=' + currentBoat.length);
+  if (currentBoat.stern !== DEFAULT_BOAT.stern) settings.push('stern=' + currentBoat.stern);
+  if (currentBoat.pramCover !== DEFAULT_BOAT.pramCover) settings.push('pram=' + (currentBoat.pramCover ? 1 : 0));
+  if (currentBoat.panels !== DEFAULT_BOAT.panels) settings.push('panelstyle=' + currentBoat.panels);
+  if (currentBoat.roof[0].at !== DEFAULT_BOAT.roof[0].at) settings.push('chimney=' + Math.round(currentBoat.roof[0].at * 100));
   if (windowCodes(currentBoat.windows) !== windowCodes(DEFAULT_BOAT.windows)) {
     settings.push('windows=' + windowCodes(currentBoat.windows));
   }
@@ -313,26 +339,109 @@ LENGTHS.forEach(function (length) {
 });
 lengthControl.addEventListener('change', function () {
   currentBoat.length = Number(lengthControl.value);
-  changeWindows(windowTypeControl.value, Number(windowCountControl.value));
+  boatChanged();
 });
 
-// Window type: one choice for each type in WINDOW_TYPES
+// Fill a dropdown with choices: { value: 'Name shown', ... }
+function fillChoices(control, choices) {
+  Object.keys(choices).forEach(function (value) {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = choices[value];
+    control.appendChild(option);
+  });
+}
+
+// After a change that alters the cabin length, drop any windows that no longer fit, then redraw
+function boatChanged() {
+  fitWindows(currentBoat);
+  showBoatOptions();
+  redrawBoat();
+}
+
+// Stern type
+const sternControl = document.getElementById('stern');
+const sternNames = {};
+Object.keys(STERNS).forEach(function (stern) { sternNames[stern] = STERNS[stern].name; });
+fillChoices(sternControl, sternNames);
+sternControl.addEventListener('change', function () {
+  currentBoat.stern = sternControl.value;
+  boatChanged();
+});
+
+// Pram cover (only for sterns that can have one)
+const pramControl = document.getElementById('pram-cover');
+pramControl.addEventListener('change', function () {
+  currentBoat.pramCover = pramControl.checked;
+  boatChanged();
+});
+
+// Panel style
+const panelControl = document.getElementById('panel-style');
+fillChoices(panelControl, PANEL_STYLES);
+panelControl.addEventListener('change', function () {
+  currentBoat.panels = panelControl.value;
+  boatChanged();
+});
+
+// Boat presets: set the whole boat and its colours
+const boatPresetArea = document.querySelector('.boat-presets');
+BOAT_PRESETS.forEach(function (preset) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'boat-preset';
+  button.textContent = preset.name;
+  button.addEventListener('click', function () {
+    Object.assign(currentBoat, preset.boat, {
+      windows: preset.boat.windows.slice(),
+      roof: preset.boat.roof.map(function (feature) { return Object.assign({}, feature); })
+    });
+    boatChanged();
+    pickers.forEach(function (picker) {
+      setColour(picker, hexFor(preset.colours[picker.dataset.part]));
+    });
+  });
+  boatPresetArea.appendChild(button);
+});
+
+// Window type: one choice for each choosable type in WINDOW_TYPES.
+// A boat preset can have a mix of types; the control then shows "Mixed" until a type is chosen.
 const windowTypeControl = document.getElementById('window-type');
+const windowNames = {};
 Object.keys(WINDOW_TYPES).forEach(function (type) {
-  const option = document.createElement('option');
-  option.value = type;
-  option.textContent = WINDOW_TYPES[type].name;
-  windowTypeControl.appendChild(option);
+  if (WINDOW_TYPES[type].choosable !== false) windowNames[type] = WINDOW_TYPES[type].name;
 });
+fillChoices(windowTypeControl, windowNames);
+const mixedOption = document.createElement('option');
+mixedOption.value = 'mixed';
+mixedOption.textContent = 'Mixed';
 windowTypeControl.addEventListener('change', function () {
-  changeWindows(windowTypeControl.value, Number(windowCountControl.value));
+  if (windowTypeControl.value !== 'mixed') {
+    changeWindows(windowTypeControl.value, Number(windowCountControl.value));
+  }
 });
 
-// Number of windows: from 1 up to as many as fit on this boat
+// Number of windows: from 1 up to as many as fit on this boat.
+// Changing the number of a mixed set makes them all the first window's type.
 const windowCountControl = document.getElementById('window-count');
 windowCountControl.addEventListener('change', function () {
-  changeWindows(windowTypeControl.value, Number(windowCountControl.value));
+  const type = windowTypeControl.value === 'mixed' ? firstChoosable() : windowTypeControl.value;
+  changeWindows(type, Number(windowCountControl.value));
 });
+
+// The first window in the list that the type control can show (skipping side hatches)
+function firstChoosable() {
+  return currentBoat.windows.find(function (type) {
+    return WINDOW_TYPES[type].choosable !== false;
+  }) || 'porthole';
+}
+
+// True if the windows are all the same choosable type
+function windowsAreUniform() {
+  return currentBoat.windows.every(function (type) {
+    return type === currentBoat.windows[0] && WINDOW_TYPES[type].choosable !== false;
+  });
+}
 
 // Set the windows to a number of one type (reduced if they don't all fit), then redraw
 function changeWindows(type, count) {
@@ -344,10 +453,21 @@ function changeWindows(type, count) {
 // Make the Boat controls show the current boat
 function showBoatOptions() {
   lengthControl.value = currentBoat.length;
-  const type = currentBoat.windows[0];
-  windowTypeControl.value = type;
+  sternControl.value = currentBoat.stern;
+  pramControl.checked = currentBoat.pramCover;
+  pramControl.disabled = !STERNS[currentBoat.stern].pramCover;
+  panelControl.value = currentBoat.panels;
+  if (windowsAreUniform()) {
+    mixedOption.remove();
+    windowTypeControl.value = currentBoat.windows[0];
+  } else {
+    windowTypeControl.appendChild(mixedOption);
+    windowTypeControl.value = 'mixed';
+  }
+  const widest = widestType(currentBoat.windows);
+  const most = Math.max(maxWindows(currentBoat, widest), currentBoat.windows.length);
   windowCountControl.replaceChildren();
-  for (let count = 1; count <= maxWindows(currentBoat, type); count++) {
+  for (let count = 1; count <= most; count++) {
     const option = document.createElement('option');
     option.value = count;
     option.textContent = count;

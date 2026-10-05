@@ -12,7 +12,7 @@
 //   bow:     a key of BOWS
 //   stern:   a key of STERNS
 //   pramCover: true to show a pram cover (semi-trad and cruiser sterns only)
-//   panels:  'single', 'split' or 'none'
+//   panels:  a key of PANEL_STYLES
 //   windows: window types from bow to stern, spread evenly along the window area
 //   roof:    roof features; "at" is how far along the cabin, from 0 (front) to 1 (rear)
 const DEFAULT_BOAT = {
@@ -61,11 +61,16 @@ const WINDOW_CENTRE_Y = 138.5;
 //   width: overall width in drawing units, including the frame
 //   code:  the letter used for this type in shareable links
 //   name:  the name shown in the window type control
+//   choosable: false for items that only appear in boat presets, such as side hatch doors
 const WINDOW_TYPES = {
   porthole: { piece: 'window-porthole', width: 26, code: 'p', name: 'Porthole' },
-  hopper:   { piece: 'window-hopper',   width: 52, code: 'h', name: 'Hopper' }
+  hopper:   { piece: 'window-hopper',   width: 52, code: 'h', name: 'Hopper' },
+  sidehatch: { piece: 'window-sidehatch', width: 40, code: 'd', name: 'Side hatch', choosable: false }
 };
 const WINDOW_GAP = 12;             // the smallest gap allowed between windows
+
+// Panel styles, with the names shown in the panel style control
+const PANEL_STYLES = { split: 'Split', single: 'Single', none: 'No panels' };
 
 // Bow types. Distances are in drawing units, measured back from the bow tip.
 //   anchorX:       where the bow tip is in the drawn piece
@@ -81,10 +86,11 @@ const BOWS = {
 //   cabinEnd:  where the roofed cabin ends (the rear hatch sits at the rear of the roof)
 //   wallsEnd:  semi-trad only: where the open-topped cabin side walls end
 //   pramCover: the drawn pram cover piece, for sterns that can have one
+//   name:      the name shown in the stern control
 const STERNS = {
-  trad:     { piece: 'stern-trad',     anchorX: 950, cabinEnd: 70 },
-  semitrad: { piece: 'stern-semitrad', anchorX: 950, cabinEnd: 176, wallsEnd: 48, pramCover: 'pram-semitrad' },
-  cruiser:  { piece: 'stern-cruiser',  anchorX: 950, cabinEnd: 134, pramCover: 'pram-cruiser' }
+  trad:     { name: 'Trad',      piece: 'stern-trad',     anchorX: 950, cabinEnd: 70 },
+  semitrad: { name: 'Semi-trad', piece: 'stern-semitrad', anchorX: 950, cabinEnd: 176, wallsEnd: 48, pramCover: 'pram-semitrad' },
+  cruiser:  { name: 'Cruiser',   piece: 'stern-cruiser',  anchorX: 950, cabinEnd: 134, pramCover: 'pram-cruiser' }
 };
 
 // ---------------------------------------------------------------------------
